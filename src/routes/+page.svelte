@@ -17,7 +17,7 @@
 
   let conference = $state<string | undefined>();
   let year = $state<number | undefined>();
-  let disabled = $derived(
+  let disabled = $derived.by(
     () =>
       conference === undefined ||
       year === undefined ||
@@ -25,7 +25,7 @@
   );
 
   const goToPapers = () => {
-    if (disabled()) return;
+    if (disabled) return;
     goto(resolve(`/papers/${conference}/${year}`));
   };
 </script>
@@ -36,8 +36,6 @@
   <div class="flex gap-4">
     <ConfPicker bind:conference />
     <YearPicker bind:year />
-    <button class="btn" disabled={disabled()} onclick={goToPapers}
-      ><Search size="18" />See papers</button
-    >
+    <button class="btn" {disabled} onclick={goToPapers}><Search size="18" />See papers</button>
   </div>
 </div>

@@ -46,7 +46,7 @@ func (pc *papersCache) WritePapers(conf string, year string, papers []Paper) err
 }
 
 // ************************************************************************* //
-//                                 JSONL HELPERS 												     //
+//                                 JSONL HELPERS                             //
 // ************************************************************************* //
 
 // readJSONL reads a JSONL file into a slice of objects.

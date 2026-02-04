@@ -37,6 +37,7 @@
   "type": "module",
   "dependencies": {
     "@lucide/svelte": "^0.563.1",
-    "@tanstack/svelte-query": "^6.0.18"
+    "@tanstack/svelte-query": "^6.0.18",
+    "katex": "^0.16.28"
   }
 }
