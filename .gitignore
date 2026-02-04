@@ -1,0 +1,9 @@
+/build
+/conf-browser
+/node_modules
+/.svelte-kit
+
+*.jsonl
+*.html
+!index.html
+!src/app.html

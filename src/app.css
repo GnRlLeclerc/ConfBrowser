@@ -1,0 +1,14 @@
+@import 'tailwindcss';
+
+/* Remove DaisyUI logs because of the way neovim formats files on save */
+/* https://github.com/saadeghi/daisyui/issues/1413 */
+@plugin 'daisyui' {
+  logs: false;
+  themes:
+    light --default,
+    dark --prefersdark,
+    retro;
+  /* https://github.com/parcel-bundler/lightningcss/issues/968 */
+  /* https://github.com/saadeghi/daisyui/issues/3882 */
+  exclude: properties;
+}
