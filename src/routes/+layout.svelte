@@ -5,7 +5,7 @@
 </script>
 
 <QueryClientProvider client={queryClient}>
-  <div class="p-6">
+  <div class="h-screen p-6">
     <slot />
   </div>
 </QueryClientProvider>

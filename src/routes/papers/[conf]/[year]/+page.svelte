@@ -26,27 +26,29 @@
   );
 </script>
 
-<div>
+<div class="flex h-full flex-col">
   <h1 class="text-center text-4xl font-bold">{props.params.conf} {props.params.year}</h1>
   {#if query.isLoading}
     <div>Loading papers...</div>
   {:else if query.isError}
     <div>Error loading papers: {query.error.message}</div>
   {:else if filtered !== undefined}
-    <Search bind:search />
-    <div class="mt-4 overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
-      <table class="table w-full">
-        <thead>
+    <div>
+      <!-- Wrap in a div to prevent the input from losing its height padding because of flex layout -->
+      <Search bind:search />
+    </div>
+    <div class="mt-4 flex overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
+      <table class="flex flex-col">
+        <thead class="table w-full table-fixed">
           <tr>
             <th class="w-24">ID</th>
             <th>Title</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody class="block w-full overflow-y-auto">
           <!-- NOTE: temporary trick to limit number of rendered papers for performance reasons (katex). -->
-          {#each filtered.slice(0, 10) as paper (paper.id)}
-            <tr class="hover:bg-base-200">
-              <td>{paper.id}</td>
+            <tr class="table w-full rounded-none hover:bg-base-200">
+              <td class="w-24">{paper.id}</td>
               <td><Latex text={paper.title} /></td>
             </tr>
           {/each}

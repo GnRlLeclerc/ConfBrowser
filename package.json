@@ -10,6 +10,7 @@
     "@tailwindcss/vite": "^4.1.18",
     "@tsconfig/svelte": "^5.0.6",
     "@types/node": "^22",
+    "@types/sanitize-html": "^2.16.0",
     "daisyui": "^5.5.17",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
@@ -38,6 +39,7 @@
   "dependencies": {
     "@lucide/svelte": "^0.563.1",
     "@tanstack/svelte-query": "^6.0.18",
-    "katex": "^0.16.28"
+    "katex": "^0.16.28",
+    "sanitize-html": "^2.17.0"
   }
 }
