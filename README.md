@@ -49,8 +49,6 @@ go build .
 
 ## Roadmap
 
-- [x] fancy papers list page + search functionality
 - [ ] proper lazy loading (infinite scroll) to avoid heavy katex rendering
-- [ ] self-host katex (build script trick ?)
 - [ ] global search functionality
 - [ ] per-paper page with additional info & links
