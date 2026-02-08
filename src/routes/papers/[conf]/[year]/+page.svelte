@@ -7,7 +7,11 @@
   import Latex from '$components/Latex.svelte';
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
+  import { page } from '$app/state';
   let props: PageProps = $props();
+
+  // https://github.com/sveltejs/kit/issues/13746#issuecomment-2848712883
+  let search = $derived(page.url.searchParams.get('search') ?? '');
 
   const query = createQuery(() => ({
     queryKey: ['papers', props.params.conf, props.params.year],
@@ -17,7 +21,6 @@
   }));
   const compare = (a: PaperMetadata, b: PaperMetadata) => a.id.localeCompare(b.id);
 
-  let search = $state('');
   let filtered = $derived(
     search === ''
       ? query.data?.sort(compare)
@@ -64,7 +67,8 @@
           () => search,
           // Trick to reset the display limit when the search changes
           (v) => {
-            search = v;
+            // eslint-disable-next-line svelte/no-navigation-without-resolve
+            goto(`?search=${v}`, { replaceState: false, noScroll: true, keepFocus: true });
             limit = 20;
           }
         }
