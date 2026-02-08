@@ -35,7 +35,6 @@
   $effect(() => {
     observer?.disconnect();
     observer = new IntersectionObserver(([entry]) => {
-      console.log('IntersectionObserver entry:', entry);
       if (entry.isIntersecting) {
         limit += 20;
       }
@@ -57,7 +56,16 @@
   {:else if filtered !== undefined}
     <div>
       <!-- Wrap in a div to prevent the input from losing its height padding because of flex layout -->
-      <Search bind:search />
+      <Search
+        bind:search={
+          () => search,
+          // Trick to reset the display limit when the search changes
+          (v) => {
+            search = v;
+            limit = 20;
+          }
+        }
+      />
     </div>
     <div class="mt-4 flex overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
       <table class="flex flex-col">
