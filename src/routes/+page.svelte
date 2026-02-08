@@ -30,7 +30,7 @@
   };
 </script>
 
-<div class="flex h-screen w-full flex-col items-center justify-center gap-6">
+<div class="flex h-full w-full flex-col items-center justify-center gap-6">
   <h1 class="text-4xl font-bold">Conf Browser</h1>
 
   <div class="flex gap-4">

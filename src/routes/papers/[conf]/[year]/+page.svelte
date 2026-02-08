@@ -12,18 +12,40 @@
     queryFn: () =>
       fetchBackend<PaperMetadata[]>(`/papers/${props.params.conf}/${props.params.year}`),
   }));
+  const compare = (a: PaperMetadata, b: PaperMetadata) => a.id.localeCompare(b.id);
 
   let search = $state('');
   let filtered = $derived(
     search === ''
-      ? query.data
-      : query.data?.filter(({ title }) =>
-          search
-            .toLowerCase()
-            .split(' ')
-            .every((substr) => title.toLowerCase().includes(substr)),
-        ),
+      ? query.data?.sort(compare)
+      : query.data
+          ?.filter(({ title }) =>
+            search
+              .toLowerCase()
+              .split(' ')
+              .every((substr) => title.toLowerCase().includes(substr)),
+          )
+          .sort(compare),
   );
+
+  // Infinite scroll watcher
+  let sentinel: HTMLTableRowElement | undefined = $state(undefined);
+  let observer: IntersectionObserver | undefined = undefined;
+
+  $effect(() => {
+    observer?.disconnect();
+    observer = new IntersectionObserver(([entry]) => {
+      console.log('IntersectionObserver entry:', entry);
+      if (entry.isIntersecting) {
+        limit += 20;
+      }
+    });
+    if (sentinel) {
+      observer.observe(sentinel);
+    }
+  });
+
+  let limit = $state(20);
 </script>
 
 <div class="flex h-full flex-col">
@@ -46,12 +68,17 @@
           </tr>
         </thead>
         <tbody class="block w-full overflow-y-auto">
-          <!-- NOTE: temporary trick to limit number of rendered papers for performance reasons (katex). -->
+          {#each filtered.slice(0, limit) as paper (paper.id)}
             <tr class="table w-full rounded-none hover:bg-base-200">
               <td class="w-24">{paper.id}</td>
               <td><Latex text={paper.title} /></td>
             </tr>
           {/each}
+
+          <!-- Infinite scroll end tracker -->
+          <tr class="invisible" bind:this={sentinel}>
+            <td colspan="2" class="h-1"></td>
+          </tr>
         </tbody>
       </table>
     </div>
