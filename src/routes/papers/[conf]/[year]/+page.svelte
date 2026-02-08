@@ -5,6 +5,8 @@
   import type { PaperMetadata } from '$lib/types';
   import Search from '$components/Search.svelte';
   import Latex from '$components/Latex.svelte';
+  import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
   let props: PageProps = $props();
 
   const query = createQuery(() => ({
@@ -78,7 +80,11 @@
         </thead>
         <tbody class="block w-full overflow-y-auto">
           {#each filtered.slice(0, limit) as paper (paper.id)}
-            <tr class="table w-full rounded-none hover:bg-base-200">
+            <tr
+              class="table w-full rounded-none hover:bg-base-200"
+              onclick={() =>
+                goto(resolve(`/paper/${props.params.conf}/${props.params.year}/${paper.id}`))}
+            >
               <td class="w-24">{paper.id}</td>
               <td><Latex text={paper.title} /></td>
             </tr>

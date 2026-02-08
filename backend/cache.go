@@ -30,19 +30,72 @@ func init() {
 }
 
 // GetPapers retrieves the list of papers for a given conference and year from the cache.
-func (pc *papersCache) GetPapers(conf string, year string) ([]Paper, error) {
+func (pc *papersCache) GetPapers(conf string, year string) ([]PaperMetadata, error) {
 	p := filepath.Join(pc.dir, conf, year, "papers.jsonl")
-	return readJSONL[Paper](p)
+	return readJSONL[PaperMetadata](p)
 }
 
 // WritePapers writes the list of papers for a given conference and year to the cache.
-func (pc *papersCache) WritePapers(conf string, year string, papers []Paper) error {
+func (pc *papersCache) WritePapers(conf string, year string, papers []PaperMetadata) error {
 	dir := filepath.Join(pc.dir, conf, year)
 	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
 		return fmt.Errorf("failed to create cache directory: %w", err)
 	}
 	p := filepath.Join(dir, "papers.jsonl")
 	return writeJSONL(p, papers)
+}
+
+// GetPaper retrieves the details of a single paper from the cache.
+func (pc *papersCache) GetPaper(conf string, year string, id string) (Paper, error) {
+	p := filepath.Join(pc.dir, conf, year, "papers", id+".json")
+	return readJSON[Paper](p)
+}
+
+// WritePaper writes the details of a single paper to the cache.
+func (pc *papersCache) WritePaper(conf string, year string, id string, paper Paper) error {
+	dir := filepath.Join(pc.dir, conf, year, "papers")
+	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
+		return fmt.Errorf("failed to create cache directory: %w", err)
+	}
+	p := filepath.Join(dir, id+".json")
+	return writeJSON(p, paper)
+}
+
+// ************************************************************************* //
+//                                  JSON HELPERS                             //
+// ************************************************************************* //
+
+// readJSON reads a JSON file into a single object
+func readJSON[T any](path string) (T, error) {
+	var obj T
+
+	f, err := os.Open(path)
+	if err != nil {
+		return obj, err
+	}
+	defer f.Close()
+
+	decoder := json.NewDecoder(f)
+	if err := decoder.Decode(&obj); err != nil {
+		return obj, fmt.Errorf("failed to decode JSON: %w", err)
+	}
+	return obj, nil
+}
+
+// writeJSON writes a single object to a JSON file, in a pretty-printed format
+func writeJSON[T any](path string, obj T) error {
+	f, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	encoder := json.NewEncoder(f)
+	encoder.SetIndent("", "  ")
+	if err := encoder.Encode(obj); err != nil {
+		return fmt.Errorf("failed to encode JSON: %w", err)
+	}
+	return nil
 }
 
 // ************************************************************************* //

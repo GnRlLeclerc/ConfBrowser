@@ -11,7 +11,7 @@ import (
 )
 
 // writeJSON writes JSON data to an http response
-func writeJSON[T any](w http.ResponseWriter, data T) {
+func writeJSONResponse[T any](w http.ResponseWriter, data T) {
 	response, err := json.Marshal(data)
 	if err != nil {
 		http.Error(w, "Failed to marshal data", http.StatusInternalServerError)
@@ -25,7 +25,7 @@ func writeJSON[T any](w http.ResponseWriter, data T) {
 // writeOk writes a default Ok response for endpoints that do not need to return anything.
 // It returns an empty JSON object because the frontend expects JSON responses
 func writeOk(w http.ResponseWriter) {
-	writeJSON(w, map[string]any{})
+	writeJSONResponse(w, map[string]any{})
 }
 
 var tabCount atomic.Int64
@@ -50,8 +50,8 @@ func ExitHandler(w http.ResponseWriter, r *http.Request) {
 
 	if tabCount.Add(-1) <= 0 {
 		go func() {
-			// Wait 1 second for a reconnection
-			time.Sleep(1 * time.Second)
+			// Wait 10 second for a reconnection
+			time.Sleep(10 * time.Second)
 
 			if tabCount.Load() > 0 {
 				return
@@ -76,7 +76,7 @@ func GetPapersHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("Cache miss for %s %s: %v", conf, year, err)
 	} else {
-		writeJSON(w, papers)
+		writeJSONResponse(w, papers)
 		return
 	}
 
@@ -90,5 +90,33 @@ func GetPapersHandler(w http.ResponseWriter, r *http.Request) {
 	if err := cache.WritePapers(conf, year, papers); err != nil {
 		log.Printf("Failed to write papers to cache: %v", err)
 	}
-	writeJSON(w, papers)
+	writeJSONResponse(w, papers)
+}
+
+func GetPaperHandler(w http.ResponseWriter, r *http.Request) {
+	conf := r.PathValue("conf")
+	year := r.PathValue("year")
+	id := r.PathValue("id")
+
+	// Try to get the paper from the file cache first
+	paper, err := cache.GetPaper(conf, year, id)
+	if err != nil {
+		log.Printf("Cache miss for paper %s %s %s: %v", conf, year, id, err)
+	} else {
+		writeJSONResponse(w, paper)
+		return
+	}
+
+	// If not found in cache, scrape and cache it
+	paper, err = scrapePaper(conf, year, id)
+	if err != nil {
+		http.Error(w, "Failed to get paper: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if err := cache.WritePaper(conf, year, id, paper); err != nil {
+		log.Printf("Failed to write paper to cache: %v", err)
+	}
+
+	writeJSONResponse(w, paper)
 }

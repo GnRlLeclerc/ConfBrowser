@@ -9,3 +9,12 @@ export interface PaperMetadata {
   id: string;
   title: string;
 }
+
+/** Full paper data */
+export interface Paper {
+  title: string;
+  authors: string[];
+  abstract: string;
+  pdf: string;
+  poster?: string;
+}

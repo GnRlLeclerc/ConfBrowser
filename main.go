@@ -26,10 +26,11 @@ var cmd = &cobra.Command{
 	Short: "Browse all conference papers in one place",
 	Run: func(cmd *cobra.Command, args []string) {
 		mux := http.NewServeMux()
-		mux.Handle("/", backend.MakeFileserverHandler(frontend, "build"))
 		mux.HandleFunc("/backend/mount", backend.MountHandler)
 		mux.HandleFunc("/backend/exit", backend.ExitHandler)
 		mux.HandleFunc("/backend/papers/{conf}/{year}", backend.GetPapersHandler)
+		mux.HandleFunc("/backend/paper/{conf}/{year}/{id}", backend.GetPaperHandler)
+		mux.Handle("/", backend.MakeFileserverHandler(frontend, "build"))
 
 		// Open the web app in the default browser
 		url := fmt.Sprintf("http://localhost:%d", port)

@@ -49,6 +49,4 @@ go build .
 
 ## Roadmap
 
-- [ ] proper lazy loading (infinite scroll) to avoid heavy katex rendering
 - [ ] global search functionality
-- [ ] per-paper page with additional info & links
