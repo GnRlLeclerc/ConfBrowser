@@ -8,7 +8,7 @@
   import CVPR from '$assets/cvf.png';
 
   interface Props {
-    conference: string | undefined;
+    conference: string | null;
   }
 
   let { conference = $bindable() }: Props = $props();
@@ -19,12 +19,16 @@
     { name: 'ICML', icon: ICML },
     { name: 'CVPR', icon: CVPR },
   ];
+
+  let conf: ConfMetadata | undefined = $derived(
+    conferences.find(({ name }) => name === conference),
+  );
 </script>
 
 <div class="dropdown dropdown-bottom">
   <div tabindex="0" role="button" class="btn m-1 w-42">
-    {#if conference !== undefined}
-      <Conference conf={conferences.find(({ name }) => name === conference)!} />
+    {#if conf !== undefined}
+      <Conference {conf} />
     {:else}
       Pick a conference
     {/if}

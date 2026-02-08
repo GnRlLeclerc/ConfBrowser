@@ -4,14 +4,12 @@
   import { Search } from '@lucide/svelte';
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
+  import { page } from '$app/state';
 
-  let conference = $state<string | undefined>();
-  let year = $state<number | undefined>();
+  let conference = $derived(page.url.searchParams.get('conference'));
+  let year = $derived(page.url.searchParams.get('year'));
   let disabled = $derived.by(
-    () =>
-      conference === undefined ||
-      year === undefined ||
-      !(year.toString().length === 4 && !isNaN(year)),
+    () => conference === null || year === null || !(year.toString().length === 4 && !isNaN(+year)),
   );
 
   const goToPapers = (event: SubmitEvent) => {
@@ -26,8 +24,30 @@
 
   <form onsubmit={goToPapers}>
     <div class="flex gap-4">
-      <ConfPicker bind:conference />
-      <YearPicker bind:year />
+      <ConfPicker
+        bind:conference={
+          () => conference,
+          (v) =>
+            // eslint-disable-next-line svelte/no-navigation-without-resolve
+            goto(`?conference=${v ?? ''}&year=${year ?? ''}`, {
+              replaceState: false,
+              noScroll: true,
+              keepFocus: true,
+            })
+        }
+      />
+      <YearPicker
+        bind:year={
+          () => (year ? +year : undefined),
+          (v) =>
+            // eslint-disable-next-line svelte/no-navigation-without-resolve
+            goto(`?conference=${conference ?? ''}&year=${v ?? ''}`, {
+              replaceState: false,
+              noScroll: true,
+              keepFocus: true,
+            })
+        }
+      />
       <button class="btn" {disabled} type="submit"><Search size="18" />See papers</button>
     </div>
   </form>
