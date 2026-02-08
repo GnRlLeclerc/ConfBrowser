@@ -14,7 +14,8 @@
       !(year.toString().length === 4 && !isNaN(year)),
   );
 
-  const goToPapers = () => {
+  const goToPapers = (event: SubmitEvent) => {
+    event.preventDefault();
     if (disabled) return;
     goto(resolve(`/papers/${conference}/${year}`));
   };
@@ -23,9 +24,11 @@
 <div class="flex h-full w-full flex-col items-center justify-center gap-6">
   <h1 class="text-4xl font-bold">Conf Browser</h1>
 
-  <div class="flex gap-4">
-    <ConfPicker bind:conference />
-    <YearPicker bind:year />
-    <button class="btn" {disabled} onclick={goToPapers}><Search size="18" />See papers</button>
-  </div>
+  <form onsubmit={goToPapers}>
+    <div class="flex gap-4">
+      <ConfPicker bind:conference />
+      <YearPicker bind:year />
+      <button class="btn" {disabled} type="submit"><Search size="18" />See papers</button>
+    </div>
+  </form>
 </div>
