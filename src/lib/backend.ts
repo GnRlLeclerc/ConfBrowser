@@ -4,13 +4,16 @@ export const BASE_URL =
 
 /** Close the backend (only in production mode to avoid disturbing dev workflow) */
 export const exit = () => {
-  if (import.meta.env.MODE !== 'development') {
-    navigator.sendBeacon(BASE_URL + '/exit');
-  }
+  navigator.sendBeacon(BASE_URL + '/exit');
 };
 
 /** Fetch data from the backend */
 export const fetchBackend = async <T>(endpoint: string): Promise<T> => {
   const data = await fetch(BASE_URL + endpoint);
-  return await data.json();
+  const text = await data.text();
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    throw new Error(text);
+  }
 };

@@ -11,6 +11,7 @@
     queryKey: ['papers', props.params.conf, props.params.year],
     queryFn: () =>
       fetchBackend<PaperMetadata[]>(`/papers/${props.params.conf}/${props.params.year}`),
+    retry: false,
   }));
   const compare = (a: PaperMetadata, b: PaperMetadata) => a.id.localeCompare(b.id);
 
@@ -52,7 +53,7 @@
   {#if query.isLoading}
     <div>Loading papers...</div>
   {:else if query.isError}
-    <div>Error loading papers: {query.error.message}</div>
+    <div class="text-red-500">Error loading papers</div>
   {:else if filtered !== undefined}
     <div>
       <!-- Wrap in a div to prevent the input from losing its height padding because of flex layout -->

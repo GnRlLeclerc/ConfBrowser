@@ -6,6 +6,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"sync/atomic"
+	"time"
 )
 
 // writeJSON writes JSON data to an http response
@@ -20,11 +22,47 @@ func writeJSON[T any](w http.ResponseWriter, data T) {
 	_, _ = w.Write(response)
 }
 
+// writeOk writes a default Ok response for endpoints that do not need to return anything.
+// It returns an empty JSON object because the frontend expects JSON responses
+func writeOk(w http.ResponseWriter) {
+	writeJSON(w, map[string]any{})
+}
+
+var tabCount atomic.Int64
+
+// MountHandler registers a new opened tab connected to the backend.
+// The backend auto closes once no tab is left.
+func MountHandler(w http.ResponseWriter, r *http.Request) {
+	tabCount.Add(1)
+
+	writeOk(w)
+}
+
 // ExitHandler exits the backend when called.
 // This is used to close the server when the user closes the webapp tab
 func ExitHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("Shutting down server...")
-	os.Exit(0)
+	// Do not go to negative values (happens when reloading a tab that was disconnected)
+	if tabCount.Load() <= 0 {
+		w.WriteHeader(http.StatusOK)
+		writeOk(w)
+		return
+	}
+
+	if tabCount.Add(-1) <= 0 {
+		go func() {
+			// Wait 1 second for a reconnection
+			time.Sleep(1 * time.Second)
+
+			if tabCount.Load() > 0 {
+				return
+			}
+
+			fmt.Printf("Shutting down server...")
+			os.Exit(0)
+		}()
+	}
+
+	writeOk(w)
 }
 
 // GetPapersHandler scrapes the papers list for a given conference

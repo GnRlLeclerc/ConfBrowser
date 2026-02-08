@@ -1,19 +1,9 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { exit } from '$lib/backend';
   import ConfPicker from '$components/ConfPicker.svelte';
   import YearPicker from '$components/YearPicker.svelte';
   import { Search } from '@lucide/svelte';
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
-
-  // Stop the backend once the tab is closed
-  onMount(() => {
-    window.addEventListener('beforeunload', (event) => {
-      exit();
-      event.preventDefault();
-    });
-  });
 
   let conference = $state<string | undefined>();
   let year = $state<number | undefined>();

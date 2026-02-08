@@ -27,6 +27,7 @@ var cmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		mux := http.NewServeMux()
 		mux.Handle("/", backend.MakeFileserverHandler(frontend, "build"))
+		mux.HandleFunc("/backend/mount", backend.MountHandler)
 		mux.HandleFunc("/backend/exit", backend.ExitHandler)
 		mux.HandleFunc("/backend/papers/{conf}/{year}", backend.GetPapersHandler)
 
