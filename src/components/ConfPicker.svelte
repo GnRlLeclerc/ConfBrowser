@@ -37,6 +37,7 @@
     {#each conferences as conf (conf.name)}
       <li>
         <button
+          type="button"
           onclick={() => {
             conference = conf.name;
             (document.activeElement as HTMLElement).blur();
