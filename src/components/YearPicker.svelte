@@ -2,7 +2,7 @@
   import { Calendar } from '@lucide/svelte';
 
   interface Props {
-    year: number | undefined;
+    year: string | null;
   }
 
   let { year = $bindable() }: Props = $props();

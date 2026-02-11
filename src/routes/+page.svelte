@@ -5,6 +5,7 @@
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
   import { page } from '$app/state';
+  import { navigate } from '$lib/url';
 
   let conference = $derived(page.url.searchParams.get('conference'));
   let year = $derived(page.url.searchParams.get('year'));
@@ -27,25 +28,17 @@
       <ConfPicker
         bind:conference={
           () => conference,
-          (v) =>
-            // eslint-disable-next-line svelte/no-navigation-without-resolve
-            goto(`?conference=${v ?? ''}&year=${year ?? ''}`, {
-              replaceState: false,
-              noScroll: true,
-              keepFocus: true,
-            })
+          (v) => {
+            navigate('conference', v);
+          }
         }
       />
       <YearPicker
         bind:year={
-          () => (year ? +year : undefined),
-          (v) =>
-            // eslint-disable-next-line svelte/no-navigation-without-resolve
-            goto(`?conference=${conference ?? ''}&year=${v ?? ''}`, {
-              replaceState: false,
-              noScroll: true,
-              keepFocus: true,
-            })
+          () => year,
+          (v) => {
+            navigate('year', v);
+          }
         }
       />
       <button class="btn" {disabled} type="submit"><Search size="18" />See papers</button>

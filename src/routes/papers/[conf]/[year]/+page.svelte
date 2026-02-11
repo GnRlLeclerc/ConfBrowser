@@ -8,6 +8,7 @@
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
   import { page } from '$app/state';
+  import { navigate } from '$lib/url';
   let props: PageProps = $props();
 
   // https://github.com/sveltejs/kit/issues/13746#issuecomment-2848712883
@@ -67,8 +68,7 @@
           () => search,
           // Trick to reset the display limit when the search changes
           (v) => {
-            // eslint-disable-next-line svelte/no-navigation-without-resolve
-            goto(`?search=${v}`, { replaceState: false, noScroll: true, keepFocus: true });
+            navigate('search', v);
             limit = 20;
           }
         }
